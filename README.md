@@ -1,12 +1,12 @@
 MFEM Development Environment in a Dev Container
 ===
 
-This repository provides a development environment for working with MFEM outside of a linux environment (e.g. Windows) by using a Docker Dev Container using Visual Studio Code. this environment comes preconfigures with PyMfem and necessary tools for running an visualizing calculations and results respecively.
+This repository provides a development environment for working with MFEM outside of a linux environment (e.g. Windows) by using a Docker Dev Container and Visual Studio Code. This environment comes preconfigured with PyMfem and necessary tools for running an visualizing calculations and results respecively.
 
 Features
 ---
 
-- Write your solutions to a file and interact with them on your host machine
+- Write your solutions to a file and interact with them on your host machine.
 - Download GLVIS on your host machine to send solutions inside the devcontainer
  to the GLVIS server on your host machine.
 
