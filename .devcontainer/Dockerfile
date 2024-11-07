@@ -16,4 +16,6 @@ RUN apt-get update && apt-get install -y \
     build-essential \
     python3-pip
 
+RUN apt update && apt install -y git
+
 RUN pip install mfem

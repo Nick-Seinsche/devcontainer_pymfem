@@ -3,8 +3,16 @@ import matplotlib.pyplot as plt
 import matplotlib.tri as tri
 import numpy as np
 
-# Create a square mesh
-mesh = mfem.Mesh(10, 10, "TRIANGLE")
+from pathlib import Path
+
+ROOT = Path("/workspaces/devcontainer_pymfem/")
+
+mesh = mfem.Mesh.MakeCartesian2D(
+    nx=10, ny=10, type=mfem.Element.TRIANGLE,
+    generate_edges=True, sx=1.0, sy=1.0
+)
+
+mesh.Print(str(ROOT / "projects" / "demo_project" / 'exported_mesh2.mesh'), 8)
 
 # Define the finite element function space
 fec = mfem.H1_FECollection(1, mesh.Dimension())  # H1 order=1
@@ -13,6 +21,8 @@ fespace = mfem.FiniteElementSpace(mesh, fec)
 # Define the essential dofs
 ess_tdof_list = mfem.intArray()
 ess_bdr = mfem.intArray([1] * mesh.bdr_attributes.Size())
+# given the fespace, writes to ess_tdof_list the list of
+# vertex indices that are not fixed by eg. diriclet bc.
 fespace.GetEssentialTrueDofs(ess_bdr, ess_tdof_list)
 
 # Define constants for alpha (diffusion coefficient) and f (RHS)
@@ -68,4 +78,5 @@ fig, ax = plt.subplots()
 ax.set_aspect("equal")
 tpc = ax.tripcolor(triang, sol, shading="gouraud")
 fig.colorbar(tpc)
-fig.savefig("/workspaces/mfem_docker/projects/demo_project/plot_output.png")
+
+plt.savefig("/workspaces/devcontainer_pymfem/projects/demo_project/plot.png")
