@@ -1,19 +1,26 @@
 MFEM Development Environment in a Dev Container
 ===
 
-This repository provides a development environment for working with MFEM, set up within a Docker Dev Container using Visual Studio Code. This environment comes preconfigured with MFEM and necessary tools for running and developing finite element method (FEM) applications.
+This repository provides a development environment for working with MFEM outside of a linux environment (e.g. Windows) by using a Docker Dev Container using Visual Studio Code. this environment comes preconfigures with PyMfem and necessary tools for running an visualizing calculations and results respecively.
 
 Features
 ---
 
-- MFEM: The container includes a pre-built version of MFEM.
-- Python: Includes Python bindings for MFEM to enable Python-based FEM development.
-- Essential Tools: Preinstalled tools for scientific computing, visualization, and code development, including matplotlib, numpy, and scipy.
-- VS Code Extensions: Automatically installs recommended extensions, such as the Python extension, for improved development experience.
-
+- Write your solutions to a file and interact with them on your host machine
+- Download GLVIS on your host machine to send solutions inside the devcontainer
+ to the GLVIS server on your host machine.
 
 Requirements
 ---
 
-- Docker: Make sure Docker is installed. You can download it here.
+- Docker: Make sure Docker is installed.
 - Visual Studio Code: Install VS Code and the Remote - Containers extension
+- Opzional: Have GLVIS installed on the host machine and server running (port 19916 by default)
+
+How to get Started
+---
+
+- Make sure the ports are mapped correctly. The port GLVIS listens to should be the same
+as the port in the projects/demo_project/main.NET_CONF
+- Run and start developing!
+

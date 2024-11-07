@@ -1,18 +1,26 @@
-import mfem.ser as mfem
-import matplotlib.pyplot as plt
-import matplotlib.tri as tri
-import numpy as np
+"""
+Pymfem demo-project for showcasing running a calculation inside a devcontainer
+and sending the solutions to glvis installed on the host machine.
+"""
 
+# standard
 from pathlib import Path
 
-ROOT = Path("/workspaces/devcontainer_pymfem/")
+# third party
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.tri as tri
+import mfem.ser as mfem
+
+ROOT = Path("/workspaces/devcontainer_pymfem/projects/demo_project")
+NET_CONFIG = ("host.docker.internal", 19916)
 
 mesh = mfem.Mesh.MakeCartesian2D(
-    nx=10, ny=10, type=mfem.Element.TRIANGLE,
+    nx=20, ny=20, type=mfem.Element.TRIANGLE,
     generate_edges=True, sx=1.0, sy=1.0
 )
 
-mesh.Print(str(ROOT / "projects" / "demo_project" / 'exported_mesh2.mesh'), 8)
+mesh.Print(str(ROOT / 'exported_mesh2.mesh'), 8)
 
 # Define the finite element function space
 fec = mfem.H1_FECollection(1, mesh.Dimension())  # H1 order=1
@@ -69,14 +77,23 @@ a.RecoverFEMSolution(X, b, x)
 verts = mesh.GetVertexArray()
 sol = x.GetDataArray()
 
+x.Save(str(ROOT / 'solution.gf'), 8)
+sol_sock = mfem.socketstream(*NET_CONFIG)
+sol_sock.precision(8)
+sol_sock.send_solution(mesh, x)
+
+mesh_sock = mfem.socketstream(*NET_CONFIG)
+mesh_sock << "mesh\n" << mesh << "\n"
+mesh_sock.flush()
+
 # Plot the solution using matplotlib
-verts = np.array(verts)
+#verts = np.array(verts)
 
-triang = tri.Triangulation(verts[:, 0], verts[:, 1])
+#triang = tri.Triangulation(verts[:, 0], verts[:, 1])
 
-fig, ax = plt.subplots()
-ax.set_aspect("equal")
-tpc = ax.tripcolor(triang, sol, shading="gouraud")
-fig.colorbar(tpc)
+#fig, ax = plt.subplots()
+#ax.set_aspect("equal")
+#tpc = ax.tripcolor(triang, sol, shading="gouraud")
+#fig.colorbar(tpc)
 
-plt.savefig("/workspaces/devcontainer_pymfem/projects/demo_project/plot.png")
+#plt.savefig(ROOT / "plot.png")
