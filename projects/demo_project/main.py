@@ -16,11 +16,10 @@ ROOT = Path("/workspaces/devcontainer_pymfem/projects/demo_project")
 NET_CONFIG = ("host.docker.internal", 19916)
 
 mesh = mfem.Mesh.MakeCartesian2D(
-    nx=20, ny=20, type=mfem.Element.TRIANGLE,
+    nx=50, ny=50, type=mfem.Element.TRIANGLE,
     generate_edges=True, sx=1.0, sy=1.0
 )
-
-mesh.Print(str(ROOT / 'exported_mesh2.mesh'), 8)
+# mesh.Print(str(ROOT / 'exported_mesh2.mesh'), 8)
 
 # Define the finite element function space
 fec = mfem.H1_FECollection(1, mesh.Dimension())  # H1 order=1
@@ -28,14 +27,21 @@ fespace = mfem.FiniteElementSpace(mesh, fec)
 
 # Define the essential dofs
 ess_tdof_list = mfem.intArray()
-ess_bdr = mfem.intArray([1] * mesh.bdr_attributes.Size())
+ess_bdr = mfem.intArray([1, 0, 1, 0])
 # given the fespace, writes to ess_tdof_list the list of
 # vertex indices that are not fixed by eg. diriclet bc.
 fespace.GetEssentialTrueDofs(ess_bdr, ess_tdof_list)
 
+class RhsCoefficient(mfem.PyCoefficientT):
+    def EvalValue(self, pt, t):
+        return pt[0]
+
 # Define constants for alpha (diffusion coefficient) and f (RHS)
 alpha = mfem.ConstantCoefficient(1.0)
-rhs = mfem.ConstantCoefficient(1.0)
+F = mfem.ConstantCoefficient(1.0)
+g = RhsCoefficient()
+
+mfem.FunctionCoefficient
 
 """
 Note
@@ -52,8 +58,10 @@ must use a numba-JIT compiled function. For example:
 a = mfem.BilinearForm(fespace)
 a.AddDomainIntegrator(mfem.DiffusionIntegrator(alpha))
 a.Assemble()
+
 b = mfem.LinearForm(fespace)
-b.AddDomainIntegrator(mfem.DomainLFIntegrator(rhs))
+b.AddDomainIntegrator(mfem.DomainLFIntegrator(F))
+b.AddBoundaryIntegrator(mfem.BoundaryLFIntegrator(g))
 b.Assemble()
 
 # Initialize a gridfunction to store the solution vector
@@ -77,14 +85,14 @@ a.RecoverFEMSolution(X, b, x)
 verts = mesh.GetVertexArray()
 sol = x.GetDataArray()
 
-x.Save(str(ROOT / 'solution.gf'), 8)
+# x.Save(str(ROOT / 'solution.gf'), 8)
 sol_sock = mfem.socketstream(*NET_CONFIG)
 sol_sock.precision(8)
 sol_sock.send_solution(mesh, x)
 
-mesh_sock = mfem.socketstream(*NET_CONFIG)
-mesh_sock << "mesh\n" << mesh << "\n"
-mesh_sock.flush()
+# mesh_sock = mfem.socketstream("host.docker.internal", 19916)
+# mesh_sock << "mesh\n" << mesh << "\n"
+# mesh_sock.flush()
 
 # Plot the solution using matplotlib
 #verts = np.array(verts)

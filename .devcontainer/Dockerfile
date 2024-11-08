@@ -19,3 +19,5 @@ RUN apt-get update && apt-get install -y \
 RUN apt update && apt install -y git
 
 RUN pip install mfem
+
+EXPOSE 19916
