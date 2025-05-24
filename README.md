@@ -3,6 +3,8 @@ MFEM Development Environment in a Dev Container
 
 This repository provides a development environment for working with MFEM outside of a linux environment (e.g. Windows) by using a Docker Dev Container and Visual Studio Code. This environment comes preconfigured with PyMfem and necessary tools for running an visualizing calculations and results respecively.
 
+Skills/learnings: - Docker - MFEM - DevOps
+
 Features
 ---
 
